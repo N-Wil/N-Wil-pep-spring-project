@@ -5,8 +5,10 @@ import org.springframework.stereotype.Repository;
 
 import com.example.entity.Message;
 
+import java.util.List;
+
 @Repository
 public interface MessageRepository extends JpaRepository<Message, Integer>{
-    
+    public List<Message> findAllByPostedBy(int postedBy);
 
 }

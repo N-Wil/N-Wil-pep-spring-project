@@ -1,15 +1,14 @@
 package com.example.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.aspectj.weaver.ResolvedPointcutDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +17,6 @@ import com.example.entity.*;
 
 import java.util.List;
 
-import javax.servlet.http.HttpSessionAttributeListener;
 
 /**
  * You will need to write your own endpoints and handlers for your controller using Spring. The endpoints you will need can be
@@ -28,7 +26,6 @@ import javax.servlet.http.HttpSessionAttributeListener;
  */
 
 @RestController
-//@RequestMapping("")
 public class SocialMediaController {
 
     private AccountService aServ;
@@ -93,13 +90,44 @@ public class SocialMediaController {
 
     //Mapping for story 5
     @GetMapping("/messages/{messageId}") 
-    public ResponseEntity<Message> getMessageByMessageId(@PathVariable int id){
+    public ResponseEntity<Message> getMessageByMessageId(@PathVariable("messageId") int id){
         Message newMessage = mServ.getMessageById(id);
         if(newMessage == null){
-            return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT).body(null);
+            return ResponseEntity.status(HttpStatus.OK).body(null);
         }
         else{
             return ResponseEntity.status(HttpStatus.OK).body(newMessage);
         }
+    }
+
+    //Mapping for story 6
+    @DeleteMapping("/messages/{messageId}")
+    public ResponseEntity<Integer> deleteMessageById(@PathVariable("messageId") int id){
+        Message deleted = mServ.deleteMessage(id);
+        if(deleted == null){
+            return ResponseEntity.status(HttpStatus.OK).body(null);
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }
+    }
+
+    //Mapping for story 7
+    @PatchMapping("messages/{messageId}")
+    public ResponseEntity<Integer> updateMessage(@PathVariable("messageId") int id, @RequestBody Message m){
+        Message updated = mServ.updateMessage(id, m);
+        if(updated == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.OK).body(1);
+        }
+    }
+    
+
+    //Mapping for story 8
+    @GetMapping("/accounts/{accountId}/messages")
+    public ResponseEntity<List<Message>> getAllMessagesByUser(@PathVariable("accountId") int id){
+        return ResponseEntity.status(HttpStatus.OK).body(mServ.getAllMessagesByUser(id));
     }
 }
